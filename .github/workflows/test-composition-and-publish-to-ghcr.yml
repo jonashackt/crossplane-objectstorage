@@ -1,0 +1,42 @@
+name: test-composition-and-publish-to-ghcr
+
+on: [push]
+
+env:
+  GHCR_PAT: ${{ secrets.GHCR_PAT }}
+  CONFIGURATION_VERSION: "v0.0.2"
+
+jobs:
+  composition-rendering-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run Composition rendering & Integration tests as described in https://www.codecentric.de/wissens-hub/blog/testing-crossplane-compositions-kuttl
+        run: echo "Run tests here!"
+
+  build-configuration-and-publish-to-ghcr:
+    needs: composition-rendering-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PAT }}
+
+      - name: Install Crossplane CLI
+        run: |
+          curl -sL "https://raw.githubusercontent.com/crossplane/crossplane/master/install.sh" |sh
+          sudo mv crossplane /usr/local/bin
+
+      - name: Build Crossplane Configuration package & publish it to GitHub Container Registry
+        run: |
+          echo "### Build Configuration .xpkg file"
+          crossplane xpkg build --package-root=. --examples-root="./examples" --ignore=".github/workflows/*" --verbose
+
+          echo "### Publish as OCI image to GHCR"
+          crossplane xpkg push "ghcr.io/jonashackt/crossplane-objectstorage:$CONFIGURATION_VERSION" --domain=https://ghcr.io --verbose

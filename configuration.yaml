@@ -1,0 +1,20 @@
+apiVersion: meta.pkg.crossplane.io/v1alpha1
+kind: Configuration
+metadata:
+  name: objectstorage
+  annotations:
+    # Set the annotations defining the maintainer, source, license, and description of your Configuration
+    meta.crossplane.io/maintainer: Jonas Hecht iam@jonashackt.io
+    meta.crossplane.io/source: github.com/jonashackt/objectstorage
+    # Set the license of your Configuration
+    meta.crossplane.io/license: MIT
+    meta.crossplane.io/description: |
+      Crossplane Configuration delivering CRDs to provision publicly accessible S3 buckets.
+    meta.crossplane.io/readme: |
+      Featuring a Composition with multiple MRs (Bucket + BucketPublicAccessBlock, BucketOwnershipControls, the BucketACL and a BucketWebsiteConfiguration)
+spec:
+  dependsOn:
+    - provider: xpkg.upbound.io/upbound/provider-aws-s3
+      version: ">=v1.4.0"
+  crossplane:
+    version: ">=v1.15.1-0"
