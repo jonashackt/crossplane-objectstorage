@@ -1,7 +1,7 @@
 apiVersion: meta.pkg.crossplane.io/v1alpha1
 kind: Configuration
 metadata:
-  name: objectstorage
+  name: crossplane-objectstorage
   annotations:
     # Set the annotations defining the maintainer, source, license, and description of your Configuration
     meta.crossplane.io/maintainer: Jonas Hecht iam@jonashackt.io
